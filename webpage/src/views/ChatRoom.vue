@@ -22,19 +22,19 @@ import Bubble from '../components/Bubble.vue';
 export default {
   data() {
     return {
+      socket: null,
       content: '',
-      messages: [{
-        name: 'siki',
-        img: '',
-        msg: '你好',
-      }],
+      messages: [],
     };
+  },
+  created() {
+    this.getSocket()
   },
   mounted() {
     const input = document.querySelector('input');
     const bottom = document.querySelector('.bottom')
     input.addEventListener('focus', () => {
-      // bottom.style.position = 'absolute';
+      bottom.style.position = 'absolute';
       window.scrollTo(0, document.body.scrollHeight)
     })
     input.addEventListener('blur', () => {
@@ -46,16 +46,36 @@ export default {
   watch: {
   },
   methods: {
+    getSocket() {
+      const socket = new WebSocket('ws://192.168.1.103:3001')
+      console.log(socket)
+      socket.onopen = () => {
+        console.log('连接服务器成功端口:3001；')
+      }
+      socket.onerror = (event) => {
+        console.log('onerror', event)
+      }
+      socket.onclose = () => {
+        console.log('socket 连接断开，正在尝试重新建立连接')
+        this.getSocket()
+      }
+      socket.onmessage = (data) => {
+        const other = JSON.parse(data.data)
+        this.$set(this.messages, this.messages.length, other)
+      }
+      this.socket = socket
+    },
     back() {
       this.$router.go(-1);
     },
     send() {
       if (this.content.trim() === '') return
-      this.$set(this.messages, this.messages.length, {
+      const mesg = {
         msg: this.content,
-        name: '',
+        name: localStorage.getItem('simple-chat-user') || '',
         img: '',
-      })
+      }
+      this.socket.send(JSON.stringify(mesg))
       this.content = ''
     },
   },

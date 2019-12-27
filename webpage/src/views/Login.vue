@@ -1,6 +1,6 @@
 <template>
   <div class="chat-login">
-    <input type="text" v-model="groupName" placeholder="输入你的昵称" autofocus>
+    <input type="text" v-model="username" placeholder="输入你的昵称" autofocus>
     <div class="enter-group" @click="goToChat">进入群聊</div>
     <!-- <router-link to="chat">进入群聊</router-link> -->
   </div>
@@ -9,8 +9,22 @@
 export default {
   data() {
     return {
-      groupName: '',
+      username: '',
     };
+  },
+  created() {
+    // const socket = new WebSocket('ws://127.0.0.1:3001')
+    // console.log(socket)
+    // socket.onopen = () => {
+    //   console.log('连接服务器成功端口:3001；')
+    //   socket.send('hello server')
+    // }
+    // socket.onerror = (event) => {
+    //   console.log('onerror', event)
+    // }
+    // socket.onmessage = (data) => {
+    //   console.log(data)
+    // }
   },
   mounted() {
     const input = document.querySelector('input');
@@ -18,6 +32,7 @@ export default {
   },
   methods: {
     goToChat() {
+      localStorage.setItem('simple-chat-user', this.username)
       this.$router.push('/chat');
     },
   },

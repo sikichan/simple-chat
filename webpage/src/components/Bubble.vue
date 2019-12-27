@@ -22,8 +22,12 @@
 <script>
 export default {
   props: {
-    align: { type: String, default: 'right' },
     message: { type: Object },
+  },
+  computed: {
+    align() {
+      return this.message.name === localStorage.getItem('simple-chat-user') ? 'right' : 'left'
+    },
   },
 };
 </script>
